@@ -13,6 +13,11 @@ module Attractor
       super do |change|
         flogger = Flog.new(all: true)
         flogger.flog(change[:file_path])
+
+        if flogger.total_score == 0
+          next [0, {}]
+        end
+
         # lines of code, ignoring comments and empty lines
         loc = File.readlines(change[:file_path])
           .reject { |line| line.strip.empty? || line.strip.start_with?('#') }.size
