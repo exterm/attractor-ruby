@@ -13,7 +13,10 @@ module Attractor
       super do |change|
         flogger = Flog.new(all: true)
         flogger.flog(change[:file_path])
-        complexity = flogger.total_score
+        # lines of code, ignoring comments and empty lines
+        loc = File.readlines(change[:file_path])
+          .reject { |line| line.strip.empty? || line.strip.start_with?('#') }.size
+        complexity = flogger.total_score / loc
         details = flogger.totals
         [complexity, details]
       end
